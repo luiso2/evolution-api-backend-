@@ -1,0 +1,1317 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Evolution API Proxy",
+    "version": "1.0.0",
+    "description": "Proxy backend for Evolution API enabling ChatGPT Actions integration for WhatsApp automation",
+    "contact": {
+      "name": "API Support"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000/api",
+      "description": "Local development server"
+    },
+    {
+      "url": "https://your-production-domain.com/api",
+      "description": "Production server"
+    }
+  ],
+  "security": [
+    {
+      "ApiKeyAuth": []
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "apikey",
+        "description": "Evolution API key for authentication"
+      }
+    },
+    "schemas": {
+      "SuccessResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "data": {
+            "type": "object"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "error": {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string"
+              },
+              "status": {
+                "type": "integer"
+              }
+            }
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "CreateInstanceRequest": {
+        "type": "object",
+        "required": ["instanceName"],
+        "properties": {
+          "instanceName": {
+            "type": "string",
+            "description": "Unique name for the WhatsApp instance",
+            "example": "my-whatsapp-bot"
+          },
+          "qrcode": {
+            "type": "boolean",
+            "description": "Generate QR code for connection",
+            "example": true
+          },
+          "integration": {
+            "type": "string",
+            "description": "Integration type",
+            "example": "WHATSAPP-BAILEYS"
+          }
+        }
+      },
+      "SendTextMessageRequest": {
+        "type": "object",
+        "required": ["number", "text"],
+        "properties": {
+          "number": {
+            "type": "string",
+            "description": "Recipient phone number (international format without +)",
+            "example": "5511999999999"
+          },
+          "text": {
+            "type": "string",
+            "description": "Message text content",
+            "example": "Hello from Evolution API!"
+          },
+          "delay": {
+            "type": "integer",
+            "description": "Delay in milliseconds before sending",
+            "example": 1000
+          }
+        }
+      },
+      "SendMediaMessageRequest": {
+        "type": "object",
+        "required": ["number", "mediatype", "media"],
+        "properties": {
+          "number": {
+            "type": "string",
+            "description": "Recipient phone number",
+            "example": "5511999999999"
+          },
+          "mediatype": {
+            "type": "string",
+            "enum": ["image", "video", "audio", "document"],
+            "description": "Type of media to send",
+            "example": "image"
+          },
+          "media": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL of the media file",
+            "example": "https://example.com/image.jpg"
+          },
+          "caption": {
+            "type": "string",
+            "description": "Caption for the media",
+            "example": "Check out this image!"
+          },
+          "fileName": {
+            "type": "string",
+            "description": "File name for the media",
+            "example": "photo.jpg"
+          }
+        }
+      },
+      "SendListMessageRequest": {
+        "type": "object",
+        "required": ["number", "title", "buttonText", "sections"],
+        "properties": {
+          "number": {
+            "type": "string",
+            "example": "5511999999999"
+          },
+          "title": {
+            "type": "string",
+            "example": "Choose an option"
+          },
+          "description": {
+            "type": "string",
+            "example": "Please select one of the following options"
+          },
+          "buttonText": {
+            "type": "string",
+            "example": "View Options"
+          },
+          "footerText": {
+            "type": "string",
+            "example": "Powered by Evolution API"
+          },
+          "sections": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "example": "Section 1"
+                },
+                "rows": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "title": {
+                        "type": "string",
+                        "example": "Option 1"
+                      },
+                      "description": {
+                        "type": "string",
+                        "example": "Description for option 1"
+                      },
+                      "rowId": {
+                        "type": "string",
+                        "example": "option_1"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "SendButtonMessageRequest": {
+        "type": "object",
+        "required": ["number", "title", "buttons"],
+        "properties": {
+          "number": {
+            "type": "string",
+            "example": "5511999999999"
+          },
+          "title": {
+            "type": "string",
+            "example": "Choose an action"
+          },
+          "description": {
+            "type": "string",
+            "example": "Please select one of the buttons below"
+          },
+          "footer": {
+            "type": "string",
+            "example": "Powered by Evolution API"
+          },
+          "buttons": {
+            "type": "array",
+            "maxItems": 3,
+            "items": {
+              "type": "object",
+              "properties": {
+                "buttonId": {
+                  "type": "string",
+                  "example": "btn_1"
+                },
+                "buttonText": {
+                  "type": "object",
+                  "properties": {
+                    "displayText": {
+                      "type": "string",
+                      "example": "Click Here"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "CheckNumberRequest": {
+        "type": "object",
+        "required": ["numbers"],
+        "properties": {
+          "numbers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": ["5511999999999", "5511888888888"]
+          }
+        }
+      },
+      "CreateGroupRequest": {
+        "type": "object",
+        "required": ["subject", "participants"],
+        "properties": {
+          "subject": {
+            "type": "string",
+            "description": "Group name",
+            "example": "My WhatsApp Group"
+          },
+          "participants": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Array of phone numbers to add",
+            "example": ["5511999999999", "5511888888888"]
+          }
+        }
+      },
+      "UpdateGroupParticipantsRequest": {
+        "type": "object",
+        "required": ["groupJid", "action", "participants"],
+        "properties": {
+          "groupJid": {
+            "type": "string",
+            "description": "Group JID",
+            "example": "123456789@g.us"
+          },
+          "action": {
+            "type": "string",
+            "enum": ["add", "remove", "promote", "demote"],
+            "description": "Action to perform on participants",
+            "example": "add"
+          },
+          "participants": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": ["5511999999999"]
+          }
+        }
+      },
+      "SetWebhookRequest": {
+        "type": "object",
+        "required": ["url"],
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Webhook URL to receive events",
+            "example": "https://your-webhook-url.com/webhook"
+          },
+          "webhook_by_events": {
+            "type": "boolean",
+            "description": "Send webhooks by event type",
+            "example": true
+          },
+          "webhook_base64": {
+            "type": "boolean",
+            "description": "Include base64 media in webhooks",
+            "example": false
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Array of events to listen to",
+            "example": ["messages.upsert", "messages.update"]
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Health check endpoint",
+        "description": "Check if the API is running and healthy",
+        "operationId": "healthCheck",
+        "tags": ["Health"],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "API is healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "healthy"
+                    },
+                    "uptime": {
+                      "type": "number",
+                      "example": 12345.67
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/info": {
+      "get": {
+        "summary": "Get API information",
+        "description": "Get information about the API version and configuration",
+        "operationId": "getInfo",
+        "tags": ["Health"],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "API information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/instances": {
+      "get": {
+        "summary": "List all WhatsApp instances",
+        "description": "Retrieve a list of all WhatsApp instances",
+        "operationId": "listInstances",
+        "tags": ["Instance Management"],
+        "responses": {
+          "200": {
+            "description": "List of instances",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new WhatsApp instance",
+        "description": "Create a new WhatsApp instance with a unique name",
+        "operationId": "createInstance",
+        "tags": ["Instance Management"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateInstanceRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Instance created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/instances/{instanceName}": {
+      "get": {
+        "summary": "Get instance details",
+        "description": "Get detailed information about a specific instance",
+        "operationId": "getInstanceDetails",
+        "tags": ["Instance Management"],
+        "parameters": [
+          {
+            "name": "instanceName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Name of the instance"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Instance details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Instance not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete instance",
+        "description": "Delete a WhatsApp instance",
+        "operationId": "deleteInstance",
+        "tags": ["Instance Management"],
+        "parameters": [
+          {
+            "name": "instanceName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Instance deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/instances/{instanceName}/status": {
+      "get": {
+        "summary": "Get instance connection status",
+        "description": "Get the current connection status of an instance",
+        "operationId": "getInstanceStatus",
+        "tags": ["Instance Management"],
+        "parameters": [
+          {
+            "name": "instanceName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Instance status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/instances/{instanceName}/connect": {
+      "post": {
+        "summary": "Connect instance",
+        "description": "Connect instance and get QR code for pairing",
+        "operationId": "connectInstance",
+        "tags": ["Instance Management"],
+        "parameters": [
+          {
+            "name": "instanceName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Connection initiated, QR code returned",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/instances/{instanceName}/disconnect": {
+      "post": {
+        "summary": "Disconnect instance",
+        "description": "Disconnect and logout from WhatsApp instance",
+        "operationId": "disconnectInstance",
+        "tags": ["Instance Management"],
+        "parameters": [
+          {
+            "name": "instanceName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Instance disconnected successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/instances/{instanceName}/messages/send": {
+      "post": {
+        "summary": "Send text message",
+        "description": "Send a text message to a WhatsApp number",
+        "operationId": "sendTextMessage",
+        "tags": ["Message Operations"],
+        "parameters": [
+          {
+            "name": "instanceName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendTextMessageRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Message sent successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/instances/{instanceName}/messages/sendMedia": {
+      "post": {
+        "summary": "Send media message",
+        "description": "Send a media message (image, video, audio, or document)",
+        "operationId": "sendMediaMessage",
+        "tags": ["Message Operations"],
+        "parameters": [
+          {
+            "name": "instanceName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendMediaMessageRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Media message sent successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/instances/{instanceName}/messages/list": {
+      "get": {
+        "summary": "List messages from chat",
+        "description": "Get messages from a specific chat",
+        "operationId": "listMessages",
+        "tags": ["Message Operations"],
+        "parameters": [
+          {
+            "name": "instanceName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "chatId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Chat ID to retrieve messages from"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of messages",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/instances/{instanceName}/messages/sendList": {
+      "post": {
+        "summary": "Send list message",
+        "description": "Send an interactive list message",
+        "operationId": "sendListMessage",
+        "tags": ["Message Operations"],
+        "parameters": [
+          {
+            "name": "instanceName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendListMessageRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "List message sent successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/instances/{instanceName}/messages/sendButtons": {
+      "post": {
+        "summary": "Send button message",
+        "description": "Send an interactive button message (max 3 buttons)",
+        "operationId": "sendButtonMessage",
+        "tags": ["Message Operations"],
+        "parameters": [
+          {
+            "name": "instanceName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendButtonMessageRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Button message sent successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/instances/{instanceName}/contacts": {
+      "get": {
+        "summary": "List all contacts",
+        "description": "Get list of all contacts for an instance",
+        "operationId": "listContacts",
+        "tags": ["Contact Management"],
+        "parameters": [
+          {
+            "name": "instanceName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of contacts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/instances/{instanceName}/contacts/{contactId}": {
+      "get": {
+        "summary": "Get contact details",
+        "description": "Get details of a specific contact",
+        "operationId": "getContactDetails",
+        "tags": ["Contact Management"],
+        "parameters": [
+          {
+            "name": "instanceName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "contactId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Contact details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/instances/{instanceName}/contacts/check": {
+      "post": {
+        "summary": "Check if numbers are on WhatsApp",
+        "description": "Verify if phone numbers are registered on WhatsApp",
+        "operationId": "checkNumbers",
+        "tags": ["Contact Management"],
+        "parameters": [
+          {
+            "name": "instanceName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckNumberRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Number verification results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/instances/{instanceName}/groups": {
+      "get": {
+        "summary": "List all groups",
+        "description": "Get list of all WhatsApp groups",
+        "operationId": "listGroups",
+        "tags": ["Group Management"],
+        "parameters": [
+          {
+            "name": "instanceName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of groups",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create new group",
+        "description": "Create a new WhatsApp group",
+        "operationId": "createGroup",
+        "tags": ["Group Management"],
+        "parameters": [
+          {
+            "name": "instanceName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateGroupRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Group created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/instances/{instanceName}/groups/{groupId}": {
+      "get": {
+        "summary": "Get group details",
+        "description": "Get details of a specific group",
+        "operationId": "getGroupDetails",
+        "tags": ["Group Management"],
+        "parameters": [
+          {
+            "name": "instanceName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "groupId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Group details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/instances/{instanceName}/groups/{groupId}/participants": {
+      "post": {
+        "summary": "Manage group participants",
+        "description": "Add, remove, promote, or demote group participants",
+        "operationId": "updateGroupParticipants",
+        "tags": ["Group Management"],
+        "parameters": [
+          {
+            "name": "instanceName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "groupId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateGroupParticipantsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Participants updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/instances/{instanceName}/webhook": {
+      "get": {
+        "summary": "Get webhook configuration",
+        "description": "Get current webhook configuration for instance",
+        "operationId": "getWebhook",
+        "tags": ["Webhook Management"],
+        "parameters": [
+          {
+            "name": "instanceName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Webhook configuration",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Set webhook URL",
+        "description": "Configure webhook URL for receiving events",
+        "operationId": "setWebhook",
+        "tags": ["Webhook Management"],
+        "parameters": [
+          {
+            "name": "instanceName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetWebhookRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook configured successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Remove webhook",
+        "description": "Remove webhook configuration",
+        "operationId": "deleteWebhook",
+        "tags": ["Webhook Management"],
+        "parameters": [
+          {
+            "name": "instanceName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Webhook removed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/instances/{instanceName}/chats": {
+      "get": {
+        "summary": "List all chats",
+        "description": "Get list of all chats for instance",
+        "operationId": "listChats",
+        "tags": ["Chat Operations"],
+        "parameters": [
+          {
+            "name": "instanceName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of chats",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/instances/{instanceName}/chats/{chatId}": {
+      "get": {
+        "summary": "Get chat details",
+        "description": "Get details of a specific chat",
+        "operationId": "getChatDetails",
+        "tags": ["Chat Operations"],
+        "parameters": [
+          {
+            "name": "instanceName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "chatId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chat details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete chat",
+        "description": "Delete a chat conversation",
+        "operationId": "deleteChat",
+        "tags": ["Chat Operations"],
+        "parameters": [
+          {
+            "name": "instanceName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "chatId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chat deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Health",
+      "description": "Health check and API information endpoints"
+    },
+    {
+      "name": "Instance Management",
+      "description": "Manage WhatsApp instances"
+    },
+    {
+      "name": "Message Operations",
+      "description": "Send and manage messages"
+    },
+    {
+      "name": "Contact Management",
+      "description": "Manage contacts"
+    },
+    {
+      "name": "Group Management",
+      "description": "Manage WhatsApp groups"
+    },
+    {
+      "name": "Webhook Management",
+      "description": "Configure webhooks for events"
+    },
+    {
+      "name": "Chat Operations",
+      "description": "Manage chat conversations"
+    }
+  ]
+}

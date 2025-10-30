@@ -1,0 +1,16 @@
+node_modules
+npm-debug.log
+dist
+logs
+.env
+.git
+.gitignore
+README.md
+CHATGPT_INTEGRATION_GUIDE.md
+QUICK_START.md
+.vscode
+.idea
+*.md
+.DS_Store
+coverage
+.nyc_output

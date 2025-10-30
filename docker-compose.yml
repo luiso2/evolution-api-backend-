@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  evolution-api-proxy:
+    build: .
+    container_name: evolution-api-proxy
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - HOST=0.0.0.0
+      - EVOLUTION_API_URL=${EVOLUTION_API_URL}
+      - EVOLUTION_API_KEY=${EVOLUTION_API_KEY}
+      - API_PREFIX=/api
+      - API_VERSION=v1
+      - CORS_ORIGIN=*
+      - RATE_LIMIT_WINDOW_MS=900000
+      - RATE_LIMIT_MAX_REQUESTS=100
+      - LOG_LEVEL=info
+      - LOG_FORMAT=combined
+    volumes:
+      - ./logs:/app/logs
+    networks:
+      - evolution-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  evolution-network:
+    driver: bridge
+
+volumes:
+  logs:
