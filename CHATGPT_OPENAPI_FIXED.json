@@ -1,9 +1,9 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "Evolution API WhatsApp Integration",
-    "description": "Backend proxy for Evolution API to manage WhatsApp Business",
-    "version": "1.0.0"
+    "title": "Evolution API Proxy",
+    "version": "1.0.0",
+    "description": "Proxy backend for Evolution API enabling ChatGPT Actions integration for WhatsApp automation"
   },
   "servers": [
     {
@@ -12,17 +12,26 @@
     }
   ],
   "paths": {
+    "/health": {
+      "get": {
+        "summary": "Health check endpoint",
+        "operationId": "healthCheck",
+        "responses": {
+          "200": {
+            "description": "API is healthy"
+          }
+        }
+      }
+    },
     "/api/instance/{instanceName}/status": {
       "get": {
+        "summary": "Get instance connection status",
         "operationId": "getInstanceStatus",
-        "summary": "Get WhatsApp instance connection status",
-        "description": "Check if the instance is connected to WhatsApp",
         "parameters": [
           {
             "name": "instanceName",
             "in": "path",
             "required": true,
-            "description": "Name of the WhatsApp instance (use 'default' for main instance)",
             "schema": {
               "type": "string",
               "default": "default"
@@ -31,16 +40,15 @@
         ],
         "responses": {
           "200": {
-            "description": "Instance status retrieved successfully"
+            "description": "Instance status retrieved"
           }
         }
       }
     },
     "/api/message/send-text": {
       "post": {
+        "summary": "Send text message via WhatsApp",
         "operationId": "sendTextMessage",
-        "summary": "Send a text message via WhatsApp",
-        "description": "Send a plain text message to a WhatsApp number",
         "requestBody": {
           "required": true,
           "content": {
@@ -50,17 +58,15 @@
                 "properties": {
                   "instanceName": {
                     "type": "string",
-                    "description": "Instance to use for sending",
                     "default": "default"
                   },
                   "number": {
                     "type": "string",
-                    "description": "Recipient phone number in international format (e.g., +5511999887766)",
-                    "pattern": "^\\+[1-9]\\d{1,14}$"
+                    "description": "Phone number with country code"
                   },
                   "text": {
                     "type": "string",
-                    "description": "Text message to send"
+                    "description": "Message to send"
                   }
                 },
                 "required": ["instanceName", "number", "text"]
@@ -70,16 +76,15 @@
         },
         "responses": {
           "200": {
-            "description": "Message sent successfully"
+            "description": "Message sent"
           }
         }
       }
     },
     "/api/message/send-media": {
       "post": {
+        "summary": "Send media message via WhatsApp",
         "operationId": "sendMediaMessage",
-        "summary": "Send media (image, document, audio, video) via WhatsApp",
-        "description": "Send a media file with optional caption",
         "requestBody": {
           "required": true,
           "content": {
@@ -89,27 +94,21 @@
                 "properties": {
                   "instanceName": {
                     "type": "string",
-                    "description": "Instance to use for sending",
                     "default": "default"
                   },
                   "number": {
-                    "type": "string",
-                    "description": "Recipient phone number in international format",
-                    "pattern": "^\\+[1-9]\\d{1,14}$"
+                    "type": "string"
                   },
                   "mediaUrl": {
                     "type": "string",
-                    "description": "URL of the media file to send",
                     "format": "uri"
                   },
                   "mediaType": {
                     "type": "string",
-                    "enum": ["image", "document", "audio", "video"],
-                    "description": "Type of media being sent"
+                    "enum": ["image", "document", "audio", "video"]
                   },
                   "caption": {
-                    "type": "string",
-                    "description": "Optional caption for the media"
+                    "type": "string"
                   }
                 },
                 "required": ["instanceName", "number", "mediaUrl", "mediaType"]
@@ -119,16 +118,15 @@
         },
         "responses": {
           "200": {
-            "description": "Media sent successfully"
+            "description": "Media sent"
           }
         }
       }
     },
     "/api/group/create": {
       "post": {
+        "summary": "Create WhatsApp group",
         "operationId": "createGroup",
-        "summary": "Create a new WhatsApp group",
-        "description": "Create a group with specified participants",
         "requestBody": {
           "required": true,
           "content": {
@@ -138,20 +136,16 @@
                 "properties": {
                   "instanceName": {
                     "type": "string",
-                    "description": "Instance to use for creating group",
                     "default": "default"
                   },
                   "groupName": {
-                    "type": "string",
-                    "description": "Name for the new group"
+                    "type": "string"
                   },
                   "participants": {
                     "type": "array",
                     "items": {
-                      "type": "string",
-                      "pattern": "^\\+[1-9]\\d{1,14}$"
-                    },
-                    "description": "Array of phone numbers to add to the group"
+                      "type": "string"
+                    }
                   }
                 },
                 "required": ["instanceName", "groupName", "participants"]
@@ -161,22 +155,20 @@
         },
         "responses": {
           "200": {
-            "description": "Group created successfully"
+            "description": "Group created"
           }
         }
       }
     },
     "/api/instance/{instanceName}/qrcode": {
       "get": {
+        "summary": "Get QR code for connection",
         "operationId": "getQRCode",
-        "summary": "Get QR code for WhatsApp connection",
-        "description": "Generate QR code to connect a new device",
         "parameters": [
           {
             "name": "instanceName",
             "in": "path",
             "required": true,
-            "description": "Instance name to generate QR for",
             "schema": {
               "type": "string",
               "default": "default"
@@ -185,64 +177,15 @@
         ],
         "responses": {
           "200": {
-            "description": "QR code generated successfully"
-          }
-        }
-      }
-    },
-    "/api/contacts/list": {
-      "get": {
-        "operationId": "listContacts",
-        "summary": "List all WhatsApp contacts",
-        "description": "Get a list of all contacts from the connected WhatsApp",
-        "parameters": [
-          {
-            "name": "instanceName",
-            "in": "query",
-            "required": true,
-            "description": "Instance to get contacts from",
-            "schema": {
-              "type": "string",
-              "default": "default"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Contacts retrieved successfully"
-          }
-        }
-      }
-    },
-    "/api/chat/list": {
-      "get": {
-        "operationId": "listChats",
-        "summary": "List all WhatsApp chats",
-        "description": "Get a list of all active chats",
-        "parameters": [
-          {
-            "name": "instanceName",
-            "in": "query",
-            "required": true,
-            "description": "Instance to get chats from",
-            "schema": {
-              "type": "string",
-              "default": "default"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Chats retrieved successfully"
+            "description": "QR code retrieved"
           }
         }
       }
     },
     "/api/webhook/config": {
       "post": {
+        "summary": "Configure webhook",
         "operationId": "configureWebhook",
-        "summary": "Configure webhook for message reception",
-        "description": "Set up webhook to receive WhatsApp messages and events",
         "requestBody": {
           "required": true,
           "content": {
@@ -252,20 +195,17 @@
                 "properties": {
                   "instanceName": {
                     "type": "string",
-                    "description": "Instance to configure webhook for",
                     "default": "default"
                   },
                   "webhookUrl": {
                     "type": "string",
-                    "description": "URL to receive webhook notifications",
                     "format": "uri"
                   },
                   "events": {
                     "type": "array",
                     "items": {
                       "type": "string"
-                    },
-                    "description": "Events to listen for (e.g., messages, status, etc.)"
+                    }
                   }
                 },
                 "required": ["instanceName", "webhookUrl"]
@@ -275,22 +215,20 @@
         },
         "responses": {
           "200": {
-            "description": "Webhook configured successfully"
+            "description": "Webhook configured"
           }
         }
       }
     },
-    "/api/instance/{instanceName}/logout": {
-      "post": {
-        "operationId": "logoutInstance",
-        "summary": "Logout from WhatsApp instance",
-        "description": "Disconnect the instance from WhatsApp",
+    "/api/contacts/list": {
+      "get": {
+        "summary": "List all contacts",
+        "operationId": "listContacts",
         "parameters": [
           {
             "name": "instanceName",
-            "in": "path",
+            "in": "query",
             "required": true,
-            "description": "Instance to logout",
             "schema": {
               "type": "string",
               "default": "default"
@@ -299,7 +237,51 @@
         ],
         "responses": {
           "200": {
-            "description": "Logged out successfully"
+            "description": "Contacts retrieved"
+          }
+        }
+      }
+    },
+    "/api/chat/list": {
+      "get": {
+        "summary": "List all chats",
+        "operationId": "listChats",
+        "parameters": [
+          {
+            "name": "instanceName",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "default"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chats retrieved"
+          }
+        }
+      }
+    },
+    "/api/instance/{instanceName}/logout": {
+      "post": {
+        "summary": "Logout from WhatsApp",
+        "operationId": "logoutInstance",
+        "parameters": [
+          {
+            "name": "instanceName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "default"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Logged out"
           }
         }
       }
