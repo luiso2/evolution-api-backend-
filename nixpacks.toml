@@ -1,21 +1,14 @@
 # nixpacks.toml
-# Railway build configuration - DO NOT USE DOCKERFILE
+# Railway build configuration - USE NIXPACKS NOT DOCKERFILE
 
 [phases.setup]
-# Specify Node.js version 18
 nixPkgs = ["nodejs-18_x", "npm-9_x"]
 
 [phases.install]
-# Install all dependencies including TypeScript
-cmds = ["npm ci --include=dev || npm install"]
+cmds = ["npm ci"]
 
 [phases.build]
-# Build TypeScript to JavaScript
 cmds = ["npm run build"]
 
 [start]
-# Start the production server with the correct path
 cmd = "node dist/server.js"
-
-[variables]
-NODE_ENV = "production"
