@@ -20,6 +20,17 @@ router.get('/health', (req: Request, res: Response) => {
   });
 });
 
+// Status endpoint (alias for health)
+router.get('/status', (req: Request, res: Response) => {
+  res.json({
+    success: true,
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    environment: config.env,
+  });
+});
+
 // API info
 router.get('/info', (req: Request, res: Response) => {
   res.json({

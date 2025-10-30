@@ -86,6 +86,25 @@ class App {
       });
     });
 
+    // Health check endpoints (multiple for compatibility)
+    const healthResponse = () => ({
+      success: true,
+      status: 'healthy',
+      service: 'Evolution API Proxy',
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      environment: config.env,
+    });
+
+    // Multiple health check routes for different services
+    this.app.get('/health', (req, res) => res.json(healthResponse()));
+    this.app.get('/status', (req, res) => res.json(healthResponse()));
+    this.app.get('/.well-known/health', (req, res) => res.json(healthResponse()));
+
+    // Simple health check for basic monitoring
+    this.app.get('/healthz', (req, res) => res.status(200).send('OK'));
+    this.app.get('/ping', (req, res) => res.status(200).send('pong'));
+
     // API routes
     this.app.use(config.api.prefix, router);
   }
