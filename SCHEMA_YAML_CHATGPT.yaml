@@ -1,0 +1,41 @@
+openapi: 3.0.0
+info:
+  title: WhatsApp API
+  version: 1.0.0
+servers:
+  - url: https://backend-production-6fab.up.railway.app
+paths:
+  /health:
+    get:
+      summary: Health check
+      operationId: healthCheck
+      responses:
+        '200':
+          description: Success
+  /api/message/send-text:
+    post:
+      summary: Send WhatsApp message
+      operationId: sendMessage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - instanceName
+                - number
+                - text
+              properties:
+                instanceName:
+                  type: string
+                  default: default
+                number:
+                  type: string
+                  description: Phone number with + and country code
+                text:
+                  type: string
+                  description: Message to send
+      responses:
+        '200':
+          description: Message sent

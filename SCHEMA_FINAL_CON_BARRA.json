@@ -1,0 +1,103 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "WhatsApp API",
+    "version": "1.0"
+  },
+  "servers": [
+    {
+      "url": "https://backend-production-6fab.up.railway.app/"
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "operationId": "checkHealth",
+        "summary": "Health check",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/message/send-text": {
+      "post": {
+        "operationId": "sendMessage",
+        "summary": "Send WhatsApp message",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "instanceName": {
+                    "type": "string",
+                    "default": "default"
+                  },
+                  "number": {
+                    "type": "string"
+                  },
+                  "text": {
+                    "type": "string"
+                  }
+                },
+                "required": ["instanceName", "number", "text"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Message sent"
+          }
+        }
+      }
+    },
+    "/api/instance/{instanceName}/status": {
+      "get": {
+        "operationId": "getStatus",
+        "summary": "Get instance status",
+        "parameters": [
+          {
+            "name": "instanceName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "default"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Status retrieved"
+          }
+        }
+      }
+    },
+    "/api/instance/{instanceName}/qrcode": {
+      "get": {
+        "operationId": "getQR",
+        "summary": "Get QR code",
+        "parameters": [
+          {
+            "name": "instanceName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "default"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "QR code retrieved"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,890 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Evolution WhatsApp API",
+    "description": "WhatsApp automation via Evolution API",
+    "version": "v1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://backend-production-6fab.up.railway.app/"
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "operationId": "healthCheck",
+        "summary": "Check API health",
+        "responses": {
+          "200": {
+            "description": "Healthy"
+          }
+        }
+      }
+    },
+    "/api/info": {
+      "get": {
+        "operationId": "getInfo",
+        "summary": "Get API info",
+        "responses": {
+          "200": {
+            "description": "API information"
+          }
+        }
+      }
+    },
+    "/api/instance/create": {
+      "post": {
+        "operationId": "createInstance",
+        "summary": "Create WhatsApp instance",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "instanceName": {
+                    "type": "string"
+                  }
+                },
+                "required": ["instanceName"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Instance created"
+          }
+        }
+      }
+    },
+    "/api/instance/{instanceName}/status": {
+      "get": {
+        "operationId": "getInstanceStatus",
+        "summary": "Get instance status",
+        "parameters": [
+          {
+            "name": "instanceName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "default"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Status retrieved"
+          }
+        }
+      }
+    },
+    "/api/instance/{instanceName}/qrcode": {
+      "get": {
+        "operationId": "getQRCode",
+        "summary": "Get QR code",
+        "parameters": [
+          {
+            "name": "instanceName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "default"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "QR code"
+          }
+        }
+      }
+    },
+    "/api/instance/{instanceName}/connect": {
+      "post": {
+        "operationId": "connectInstance",
+        "summary": "Connect instance",
+        "parameters": [
+          {
+            "name": "instanceName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "default"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Connected"
+          }
+        }
+      }
+    },
+    "/api/instance/{instanceName}/disconnect": {
+      "post": {
+        "operationId": "disconnectInstance",
+        "summary": "Disconnect instance",
+        "parameters": [
+          {
+            "name": "instanceName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "default"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Disconnected"
+          }
+        }
+      }
+    },
+    "/api/instance/{instanceName}/logout": {
+      "post": {
+        "operationId": "logoutInstance",
+        "summary": "Logout WhatsApp",
+        "parameters": [
+          {
+            "name": "instanceName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "default"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Logged out"
+          }
+        }
+      }
+    },
+    "/api/instance/{instanceName}/delete": {
+      "delete": {
+        "operationId": "deleteInstance",
+        "summary": "Delete instance",
+        "parameters": [
+          {
+            "name": "instanceName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deleted"
+          }
+        }
+      }
+    },
+    "/api/instance/list": {
+      "get": {
+        "operationId": "listInstances",
+        "summary": "List all instances",
+        "responses": {
+          "200": {
+            "description": "Instance list"
+          }
+        }
+      }
+    },
+    "/api/message/send-text": {
+      "post": {
+        "operationId": "sendText",
+        "summary": "Send text message",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "instanceName": {
+                    "type": "string",
+                    "default": "default"
+                  },
+                  "number": {
+                    "type": "string"
+                  },
+                  "text": {
+                    "type": "string"
+                  }
+                },
+                "required": ["instanceName", "number", "text"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Sent"
+          }
+        }
+      }
+    },
+    "/api/message/send-media": {
+      "post": {
+        "operationId": "sendMedia",
+        "summary": "Send media",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "instanceName": {
+                    "type": "string",
+                    "default": "default"
+                  },
+                  "number": {
+                    "type": "string"
+                  },
+                  "mediaUrl": {
+                    "type": "string"
+                  },
+                  "mediaType": {
+                    "type": "string",
+                    "enum": ["image", "video", "audio", "document"]
+                  },
+                  "caption": {
+                    "type": "string"
+                  }
+                },
+                "required": ["instanceName", "number", "mediaUrl", "mediaType"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Sent"
+          }
+        }
+      }
+    },
+    "/api/message/send-location": {
+      "post": {
+        "operationId": "sendLocation",
+        "summary": "Send location",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "instanceName": {
+                    "type": "string",
+                    "default": "default"
+                  },
+                  "number": {
+                    "type": "string"
+                  },
+                  "latitude": {
+                    "type": "number"
+                  },
+                  "longitude": {
+                    "type": "number"
+                  }
+                },
+                "required": ["instanceName", "number", "latitude", "longitude"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Sent"
+          }
+        }
+      }
+    },
+    "/api/message/send-contact": {
+      "post": {
+        "operationId": "sendContact",
+        "summary": "Send contact",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "instanceName": {
+                    "type": "string",
+                    "default": "default"
+                  },
+                  "number": {
+                    "type": "string"
+                  },
+                  "contactName": {
+                    "type": "string"
+                  },
+                  "contactNumber": {
+                    "type": "string"
+                  }
+                },
+                "required": ["instanceName", "number", "contactName", "contactNumber"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Sent"
+          }
+        }
+      }
+    },
+    "/api/message/send-list": {
+      "post": {
+        "operationId": "sendList",
+        "summary": "Send list message",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "instanceName": {
+                    "type": "string",
+                    "default": "default"
+                  },
+                  "number": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "buttonText": {
+                    "type": "string"
+                  },
+                  "sections": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "title": {
+                          "type": "string"
+                        },
+                        "rows": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string"
+                              },
+                              "title": {
+                                "type": "string"
+                              },
+                              "description": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "required": ["instanceName", "number", "title", "buttonText", "sections"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Sent"
+          }
+        }
+      }
+    },
+    "/api/message/send-buttons": {
+      "post": {
+        "operationId": "sendButtons",
+        "summary": "Send button message",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "instanceName": {
+                    "type": "string",
+                    "default": "default"
+                  },
+                  "number": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "buttons": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "text": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "required": ["instanceName", "number", "title", "buttons"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Sent"
+          }
+        }
+      }
+    },
+    "/api/message/delete": {
+      "post": {
+        "operationId": "deleteMessage",
+        "summary": "Delete message",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "instanceName": {
+                    "type": "string",
+                    "default": "default"
+                  },
+                  "messageId": {
+                    "type": "string"
+                  }
+                },
+                "required": ["instanceName", "messageId"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Deleted"
+          }
+        }
+      }
+    },
+    "/api/message/react": {
+      "post": {
+        "operationId": "reactMessage",
+        "summary": "React to message",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "instanceName": {
+                    "type": "string",
+                    "default": "default"
+                  },
+                  "messageId": {
+                    "type": "string"
+                  },
+                  "emoji": {
+                    "type": "string"
+                  }
+                },
+                "required": ["instanceName", "messageId", "emoji"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Reacted"
+          }
+        }
+      }
+    },
+    "/api/group/create": {
+      "post": {
+        "operationId": "createGroup",
+        "summary": "Create group",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "instanceName": {
+                    "type": "string",
+                    "default": "default"
+                  },
+                  "groupName": {
+                    "type": "string"
+                  },
+                  "participants": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": ["instanceName", "groupName", "participants"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Created"
+          }
+        }
+      }
+    },
+    "/api/group/list": {
+      "get": {
+        "operationId": "listGroups",
+        "summary": "List groups",
+        "parameters": [
+          {
+            "name": "instanceName",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "default"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Group list"
+          }
+        }
+      }
+    },
+    "/api/group/info": {
+      "get": {
+        "operationId": "getGroupInfo",
+        "summary": "Get group info",
+        "parameters": [
+          {
+            "name": "instanceName",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "default"
+            }
+          },
+          {
+            "name": "groupId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Group info"
+          }
+        }
+      }
+    },
+    "/api/group/add-participants": {
+      "post": {
+        "operationId": "addParticipants",
+        "summary": "Add participants",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "instanceName": {
+                    "type": "string",
+                    "default": "default"
+                  },
+                  "groupId": {
+                    "type": "string"
+                  },
+                  "participants": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": ["instanceName", "groupId", "participants"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Added"
+          }
+        }
+      }
+    },
+    "/api/group/remove-participants": {
+      "post": {
+        "operationId": "removeParticipants",
+        "summary": "Remove participants",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "instanceName": {
+                    "type": "string",
+                    "default": "default"
+                  },
+                  "groupId": {
+                    "type": "string"
+                  },
+                  "participants": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": ["instanceName", "groupId", "participants"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Removed"
+          }
+        }
+      }
+    },
+    "/api/contacts/list": {
+      "get": {
+        "operationId": "listContacts",
+        "summary": "List contacts",
+        "parameters": [
+          {
+            "name": "instanceName",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "default"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Contact list"
+          }
+        }
+      }
+    },
+    "/api/contacts/check": {
+      "post": {
+        "operationId": "checkNumbers",
+        "summary": "Check if on WhatsApp",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "instanceName": {
+                    "type": "string",
+                    "default": "default"
+                  },
+                  "numbers": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": ["instanceName", "numbers"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Checked"
+          }
+        }
+      }
+    },
+    "/api/chat/list": {
+      "get": {
+        "operationId": "listChats",
+        "summary": "List chats",
+        "parameters": [
+          {
+            "name": "instanceName",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "default"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chat list"
+          }
+        }
+      }
+    },
+    "/api/chat/messages": {
+      "get": {
+        "operationId": "getChatMessages",
+        "summary": "Get chat messages",
+        "parameters": [
+          {
+            "name": "instanceName",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "default"
+            }
+          },
+          {
+            "name": "chatId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Messages"
+          }
+        }
+      }
+    },
+    "/api/webhook/config": {
+      "post": {
+        "operationId": "configWebhook",
+        "summary": "Configure webhook",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "instanceName": {
+                    "type": "string",
+                    "default": "default"
+                  },
+                  "webhookUrl": {
+                    "type": "string"
+                  },
+                  "events": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": ["instanceName", "webhookUrl"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Configured"
+          }
+        }
+      }
+    },
+    "/api/profile/status": {
+      "post": {
+        "operationId": "updateStatus",
+        "summary": "Update profile status",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "instanceName": {
+                    "type": "string",
+                    "default": "default"
+                  },
+                  "status": {
+                    "type": "string"
+                  }
+                },
+                "required": ["instanceName", "status"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated"
+          }
+        }
+      }
+    },
+    "/api/profile/picture": {
+      "post": {
+        "operationId": "updatePicture",
+        "summary": "Update profile pic",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "instanceName": {
+                    "type": "string",
+                    "default": "default"
+                  },
+                  "pictureUrl": {
+                    "type": "string"
+                  }
+                },
+                "required": ["instanceName", "pictureUrl"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {}
+  }
+}

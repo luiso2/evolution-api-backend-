@@ -1,0 +1,290 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Evolution API Proxy",
+    "version": "1.0.0",
+    "description": "Proxy backend for Evolution API enabling ChatGPT Actions integration for WhatsApp automation"
+  },
+  "servers": [
+    {
+      "url": "https://backend-production-6fab.up.railway.app/",
+      "description": "Production server with trailing slash"
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Health check endpoint",
+        "operationId": "healthCheck",
+        "responses": {
+          "200": {
+            "description": "API is healthy"
+          }
+        }
+      }
+    },
+    "/api/instance/{instanceName}/status": {
+      "get": {
+        "summary": "Get instance connection status",
+        "operationId": "getInstanceStatus",
+        "parameters": [
+          {
+            "name": "instanceName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "default"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Instance status retrieved"
+          }
+        }
+      }
+    },
+    "/api/message/send-text": {
+      "post": {
+        "summary": "Send text message via WhatsApp",
+        "operationId": "sendTextMessage",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "instanceName": {
+                    "type": "string",
+                    "default": "default"
+                  },
+                  "number": {
+                    "type": "string",
+                    "description": "Phone number with country code"
+                  },
+                  "text": {
+                    "type": "string",
+                    "description": "Message to send"
+                  }
+                },
+                "required": ["instanceName", "number", "text"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Message sent"
+          }
+        }
+      }
+    },
+    "/api/message/send-media": {
+      "post": {
+        "summary": "Send media message via WhatsApp",
+        "operationId": "sendMediaMessage",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "instanceName": {
+                    "type": "string",
+                    "default": "default"
+                  },
+                  "number": {
+                    "type": "string"
+                  },
+                  "mediaUrl": {
+                    "type": "string",
+                    "format": "uri"
+                  },
+                  "mediaType": {
+                    "type": "string",
+                    "enum": ["image", "document", "audio", "video"]
+                  },
+                  "caption": {
+                    "type": "string"
+                  }
+                },
+                "required": ["instanceName", "number", "mediaUrl", "mediaType"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Media sent"
+          }
+        }
+      }
+    },
+    "/api/group/create": {
+      "post": {
+        "summary": "Create WhatsApp group",
+        "operationId": "createGroup",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "instanceName": {
+                    "type": "string",
+                    "default": "default"
+                  },
+                  "groupName": {
+                    "type": "string"
+                  },
+                  "participants": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": ["instanceName", "groupName", "participants"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Group created"
+          }
+        }
+      }
+    },
+    "/api/instance/{instanceName}/qrcode": {
+      "get": {
+        "summary": "Get QR code for connection",
+        "operationId": "getQRCode",
+        "parameters": [
+          {
+            "name": "instanceName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "default"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "QR code retrieved"
+          }
+        }
+      }
+    },
+    "/api/webhook/config": {
+      "post": {
+        "summary": "Configure webhook",
+        "operationId": "configureWebhook",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "instanceName": {
+                    "type": "string",
+                    "default": "default"
+                  },
+                  "webhookUrl": {
+                    "type": "string",
+                    "format": "uri"
+                  },
+                  "events": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": ["instanceName", "webhookUrl"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook configured"
+          }
+        }
+      }
+    },
+    "/api/contacts/list": {
+      "get": {
+        "summary": "List all contacts",
+        "operationId": "listContacts",
+        "parameters": [
+          {
+            "name": "instanceName",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "default"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Contacts retrieved"
+          }
+        }
+      }
+    },
+    "/api/chat/list": {
+      "get": {
+        "summary": "List all chats",
+        "operationId": "listChats",
+        "parameters": [
+          {
+            "name": "instanceName",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "default"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chats retrieved"
+          }
+        }
+      }
+    },
+    "/api/instance/{instanceName}/logout": {
+      "post": {
+        "summary": "Logout from WhatsApp",
+        "operationId": "logoutInstance",
+        "parameters": [
+          {
+            "name": "instanceName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "default"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Logged out"
+          }
+        }
+      }
+    }
+  }
+}
