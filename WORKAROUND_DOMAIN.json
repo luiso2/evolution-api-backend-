@@ -1,0 +1,58 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "WhatsApp Evolution API",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://backend-production-6fab.up.railway.app/",
+      "description": "Production (with trailing slash)"
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "operationId": "healthCheck",
+        "summary": "Check status",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/message/send-text": {
+      "post": {
+        "operationId": "sendText",
+        "summary": "Send message",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "instanceName": {
+                    "type": "string",
+                    "default": "default"
+                  },
+                  "number": {
+                    "type": "string"
+                  },
+                  "text": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Sent"
+          }
+        }
+      }
+    }
+  }
+}
