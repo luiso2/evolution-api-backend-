@@ -1,13 +1,21 @@
 # nixpacks.toml
+# Railway will use this configuration to build and deploy your app
 
 [phases.setup]
+# Specify Node.js version
 nixPkgs = ["nodejs-18_x", "npm-9_x"]
 
 [phases.install]
-cmds = ["npm ci --production=false"]
+# Install all dependencies including devDependencies for building TypeScript
+cmds = ["npm install"]
 
 [phases.build]
+# Build the TypeScript project
 cmds = ["npm run build"]
 
 [start]
+# Start the production server
 cmd = "npm start"
+
+[variables]
+NODE_ENV = "production"
