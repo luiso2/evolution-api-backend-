@@ -27,7 +27,7 @@ class ErrorHandler {
       const evolutionMessage = axiosError.response?.data?.message || axiosError.message;
       const evolutionData = axiosError.response?.data;
 
-      return res.status(evolutionStatus).json({
+      res.status(evolutionStatus).json({
         success: false,
         error: {
           message: evolutionMessage,
@@ -36,11 +36,12 @@ class ErrorHandler {
         },
         timestamp: new Date().toISOString(),
       });
+      return;
     }
 
     // Handle validation errors
     if (err.name === 'ValidationError') {
-      return res.status(400).json({
+      res.status(400).json({
         success: false,
         error: {
           message: 'Validation Error',
@@ -49,6 +50,7 @@ class ErrorHandler {
         },
         timestamp: new Date().toISOString(),
       });
+      return;
     }
 
     // Handle generic errors
